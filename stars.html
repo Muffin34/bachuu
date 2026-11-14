@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Sky for Bachuu</title>
+<meta name="description" content="Nine stars, one letter. Open whenever you're ready.">
+<meta property="og:title" content="A sky for you, Bachuu 💛">
+<meta property="og:description" content="Nine stars, one letter. Open whenever you're ready.">
+<meta name="theme-color" content="#05060f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Caveat:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05060f;
+  --ink-2:#0b0e22;
+  --gold:#f5d491;
+  --gold-soft:rgba(245,212,145,.55);
+  --blue:#8fb4ff;
+  --text:#eef0ff;
+  --muted:rgba(226,230,255,.62);
+  --glass:rgba(18,22,48,.62);
+  --line:rgba(245,212,145,.75);
+  --serif:"Cormorant Garamond", Georgia, serif;
+  --hand:"Caveat", "Segoe Script", cursive;
+  --sans:"Inter", system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--ink);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:var(--serif);-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- sky ---------- */
+#sky{position:fixed;inset:0;width:100%;height:100%;display:block;
+  background:radial-gradient(ellipse 120% 80% at 50% 110%, #1a1440 0%, #0b0e22 45%, #05060f 100%)}
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+/* ---------- scenes ---------- */
+.scene{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));
+  opacity:0;visibility:hidden;transition:opacity 1.4s ease, visibility 0s linear 1.4s}
+.scene.on{opacity:1;visibility:visible;transition:opacity 1.4s ease, visibility 0s}
+
+/* intro */
+#intro{text-align:center;gap:6px}
+.intro-line{font-weight:300;font-size:clamp(22px,5.2vw,40px);line-height:1.35;max-width:24ch;
+  opacity:0;transform:translateY(14px);filter:blur(6px);transition:all 1.6s cubic-bezier(.2,.7,.2,1)}
+.intro-line.show{opacity:1;transform:none;filter:none}
+.intro-line.hi{font-family:var(--hand);font-size:clamp(44px,11vw,84px);color:var(--gold);margin-bottom:10px}
+.intro-line.small{font-family:var(--sans);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:18px}
+.cta{margin-top:34px;padding:16px 34px;border-radius:999px;font-family:var(--sans);font-size:14px;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid var(--gold-soft);color:var(--gold);background:rgba(245,212,145,.06);
+  white-space:nowrap;box-shadow:0 0 0 0 rgba(245,212,145,.4);animation:breathe 3.2s ease-in-out infinite;
+  opacity:0;transform:translateY(10px);transition:opacity 1.2s, transform 1.2s, background .3s}
+.cta:not(.show){pointer-events:none}
+.cta.show{opacity:1;transform:none}
+.cta:hover{background:rgba(245,212,145,.14)}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(245,212,145,.28)}50%{box-shadow:0 0 0 14px rgba(245,212,145,0)}}
+
+/* constellation */
+#constellation{justify-content:flex-start;padding-top:max(28px,env(safe-area-inset-top))}
+.c-head{text-align:center;max-width:560px}
+.c-head h2{font-family:var(--hand);font-weight:400;color:var(--gold);font-size:clamp(30px,7vw,48px);line-height:1}
+.c-head p{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:8px;letter-spacing:.04em;min-height:1.4em;transition:opacity .6s}
+.c-wrap{position:relative;flex:1;width:100%;max-width:760px;min-height:0;display:flex;align-items:center;justify-content:center}
+#cSvg{width:100%;height:100%;max-height:78vh;overflow:visible}
+.edge{stroke:var(--line);stroke-width:1.6;fill:none;stroke-linecap:round;filter:drop-shadow(0 0 4px rgba(245,212,145,.8))}
+.star-g{cursor:pointer}
+.star-g .halo{fill:url(#halo);opacity:.35;transition:opacity .6s, r .6s}
+.star-g .core{fill:#cfd8ff;transition:fill .6s}
+.star-g .hit{fill:transparent}
+.star-g .lbl{font-family:var(--sans);font-size:21px;fill:var(--muted);letter-spacing:.12em;text-transform:uppercase;opacity:0;transition:opacity .8s}
+.star-g.next .halo{animation:pulse 1.8s ease-in-out infinite;opacity:.9}
+.star-g.next .core{fill:#fff}
+.star-g.lit .halo{opacity:1}
+.star-g.lit .core{fill:var(--gold)}
+.star-g.lit .lbl{opacity:1;fill:var(--gold-soft)}
+.star-g.locked{cursor:default}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.55)}}
+.star-g .halo{transform-box:fill-box;transform-origin:center}
+#heartFill{fill:url(#heartGrad);opacity:0;transition:opacity 3s ease}
+#nameText{font-family:var(--hand);font-size:128px;fill:transparent;stroke:var(--gold);stroke-width:1.3;
+  stroke-dasharray:1400;stroke-dashoffset:1400;opacity:0}
+#nameText.write{opacity:1;animation:write 5s ease forwards}
+@keyframes write{70%{stroke-dashoffset:0;fill:transparent}100%{stroke-dashoffset:0;fill:rgba(245,212,145,.95)}}
+.next-btn{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translate(-50%,10px)}
+
+/* memory card */
+#card{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:20;
+  background:rgba(3,4,12,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;transition:opacity .6s, visibility 0s linear .6s}
+#card:not(.on){pointer-events:none}
+#card.on{opacity:1;visibility:visible;transition:opacity .6s, visibility 0s}
+.card-in{position:relative;width:100%;max-width:440px;padding:34px 28px 26px;border-radius:22px;background:var(--glass);
+  border:1px solid rgba(245,212,145,.22);box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);transform:translateY(18px) scale(.97);transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+#card.on .card-in{transform:none}
+.card-num{font-family:var(--sans);font-size:11px;letter-spacing:.28em;color:var(--gold-soft);text-transform:uppercase}
+.card-date{font-family:var(--sans);font-size:12px;letter-spacing:.14em;color:var(--muted);margin-top:4px;text-transform:uppercase}
+.card-title{font-family:var(--serif);font-style:italic;font-weight:400;font-size:30px;line-height:1.15;margin-top:14px}
+.card-quote{margin-top:18px;padding:16px 18px;border-left:2px solid var(--gold);background:rgba(245,212,145,.06);border-radius:0 12px 12px 0;
+  font-family:var(--hand);font-size:25px;line-height:1.25;color:#fff3d6}
+.card-quote small{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.card-note{margin-top:18px;font-size:19px;line-height:1.55;color:var(--text)}
+.card-close{margin-top:24px;width:100%;padding:14px;border-radius:14px;font-family:var(--sans);font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gold);border:1px solid rgba(245,212,145,.3);background:rgba(245,212,145,.05)}
+
+/* numbers */
+#numbers{overflow-y:auto;justify-content:flex-start;padding-top:max(48px,env(safe-area-inset-top))}
+.num-head{text-align:center;max-width:520px}
+.num-head h2{font-family:var(--hand);font-weight:400;font-size:clamp(34px,8vw,54px);color:var(--gold);line-height:1}
+.num-head p{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;max-width:640px;margin-top:28px}
+.stat{padding:20px 16px;border-radius:18px;background:rgba(18,22,48,.5);border:1px solid rgba(143,180,255,.14);
+  opacity:0;transform:translateY(16px);transition:opacity .9s, transform .9s}
+.stat.show{opacity:1;transform:none}
+.stat b{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(34px,8vw,50px);line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-family:var(--sans);font-size:12.5px;line-height:1.45;color:var(--muted);margin-top:8px}
+.stat.wide{grid-column:1/-1;text-align:center;border-color:rgba(245,212,145,.3);background:rgba(245,212,145,.05)}
+.stat.wide b{color:var(--gold)}
+#numbers .cta{margin:30px 0 20px;flex-shrink:0}
+
+/* letter */
+#letter{overflow-y:auto;justify-content:flex-start;padding-top:max(40px,env(safe-area-inset-top))}
+.paper{position:relative;width:100%;max-width:620px;padding:46px 30px 40px;margin-bottom:24px;border-radius:6px;
+  background:linear-gradient(180deg,#f6eedb,#efe3c7);color:#2b2335;
+  box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.2) inset}
+.paper::before{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;opacity:.35;
+  background:repeating-linear-gradient(180deg,transparent 0 37px,rgba(90,70,120,.12) 37px 38px)}
+.paper .to{font-family:var(--hand);font-size:44px;color:#6b3f6e;line-height:1}
+.paper p{position:relative;font-family:var(--serif);font-size:clamp(19px,4.4vw,22px);line-height:1.6;margin-top:18px;
+  opacity:0;transform:translateY(8px);transition:opacity 1.2s, transform 1.2s}
+.paper p.show{opacity:1;transform:none}
+.paper em{color:#6b3f6e}
+.paper .sign{font-family:var(--hand);font-size:36px;color:#6b3f6e;text-align:right;margin-top:26px}
+.seal{position:absolute;right:22px;top:-24px;width:56px;height:56px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#e9b45c,#b67a22 70%);box-shadow:0 6px 16px rgba(0,0,0,.4);
+  display:grid;place-items:center;font-family:var(--hand);font-size:24px;color:#5a3608}
+#letter .cta{margin:6px 0 30px;flex-shrink:0}
+
+/* finale */
+#finale{text-align:center}
+#finale h2{font-family:var(--hand);font-weight:400;color:var(--gold);font-size:clamp(42px,10vw,78px);line-height:1.05}
+#finale p{font-weight:300;font-size:clamp(20px,4.6vw,28px);line-height:1.5;max-width:26ch;margin-top:18px}
+#finale .tiny{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:30px;letter-spacing:.06em}
+.f-item{opacity:0;transform:translateY(12px);transition:opacity 1.6s, transform 1.6s}
+.f-item.show{opacity:1;transform:none}
+.nw{white-space:nowrap}
+.replay{margin-top:26px;font-family:var(--sans);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-decoration:underline;text-underline-offset:4px}
+
+/* music */
+#yt{position:fixed;left:-9999px;top:0;width:240px;height:240px;pointer-events:none}
+#music{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:30;width:48px;height:48px;border-radius:50%;
+  display:none;place-items:center;background:rgba(18,22,48,.7);border:1px solid rgba(245,212,145,.3);backdrop-filter:blur(10px)}
+#music.show{display:grid}
+#music .disc{width:28px;height:28px;border-radius:50%;background:repeating-radial-gradient(circle,#222 0 1px,#111 1px 3px);
+  border:1px solid rgba(255,255,255,.15);position:relative}
+#music .disc::after{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--gold)}
+#music.playing .disc{animation:spin 3.5s linear infinite}
+#music:not(.playing)::after{content:"";position:absolute;width:30px;height:1.5px;background:var(--muted);transform:rotate(-45deg)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.3s!important}
+}
+@media (max-width:420px){ .paper{padding:40px 22px 34px} .card-in{padding:30px 22px 22px} }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<div class="grain"></div>
+<div id="yt"></div>
+
+<!-- 1. Intro -->
+<section id="intro" class="scene on" aria-live="polite">
+  <div class="intro-line hi">Hi Bachuu,</div>
+  <div class="intro-line">you asked for space, and you'll have it.</div>
+  <div class="intro-line">This isn't me knocking on your door.</div>
+  <div class="intro-line">It's a little sky I made for you, to open whenever you feel like it.</div>
+  <div class="intro-line small">Headphones on, maybe 🎧</div>
+  <button class="cta" id="begin">Open the sky</button>
+</section>
+
+<!-- 2. Constellation -->
+<section id="constellation" class="scene">
+  <div class="c-head">
+    <h2>Nine stars of us</h2>
+    <p id="cHint">Tap the star that's glowing.</p>
+  </div>
+  <div class="c-wrap">
+    <svg id="cSvg" viewBox="90 50 820 780" aria-label="A constellation of our memories">
+      <defs>
+        <radialGradient id="halo"><stop offset="0" stop-color="#ffe9b8" stop-opacity=".9"/><stop offset=".35" stop-color="#f5d491" stop-opacity=".35"/><stop offset="1" stop-color="#f5d491" stop-opacity="0"/></radialGradient>
+        <radialGradient id="heartGrad" cx="50%" cy="45%"><stop offset="0" stop-color="#f5d491" stop-opacity=".22"/><stop offset="1" stop-color="#8fb4ff" stop-opacity="0"/></radialGradient>
+      </defs>
+      <path id="heartFill"/>
+      <g id="edges"></g>
+      <text id="nameText" x="500" y="500" text-anchor="middle">Tasneem</text>
+      <g id="stars"></g>
+    </svg>
+    <button class="cta next-btn" id="toNumbers">There's more</button>
+  </div>
+</section>
+
+<!-- memory card -->
+<div id="card" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
+  <div class="card-in">
+    <div class="card-num" id="cardNum"></div>
+    <div class="card-date" id="cardDate"></div>
+    <h3 class="card-title" id="cardTitle"></h3>
+    <div class="card-quote" id="cardQuote"></div>
+    <p class="card-note" id="cardNote"></p>
+    <button class="card-close" id="cardClose">Keep it lit ✦</button>
+  </div>
+</div>
+
+<!-- 3. Numbers -->
+<section id="numbers" class="scene">
+  <div class="num-head">
+    <h2>Us, in numbers</h2>
+    <p>I counted. Of course I did.</p>
+  </div>
+  <div class="grid" id="grid"></div>
+  <button class="cta" id="toLetter">Read my letter</button>
+</section>
+
+<!-- 4. Letter -->
+<section id="letter" class="scene">
+  <article class="paper">
+    <div class="seal">M</div>
+    <div class="to">Mera Bachaa,</div>
+    <p>I'm not writing this to win last night. There's nothing to win. The only side I ever want to be on is yours.</p>
+    <p>I'm sorry. For <em>"dhang se baat kar."</em> You'd told me before that you don't like that tone, and I said it anyway. For going quiet and letting a word like <em>"reconsider"</em> sit between us, when there isn't one thing about you I would ever reconsider. And for answering hurt with more hurt, when all I had to say was, <em>"Tasneem, that one stung."</em></p>
+    <p>You told me you didn't mean it that way, and I believe you. Some words press on a nerve in me that has nothing to do with you. It's the part of me that's still building, still trying to prove something. That's mine to look after gently. You shouldn't pay for it. Next time I'll say it softly, before it turns into a storm.</p>
+    <p>Back in May you told me one of the things you love about me is how easily I calm things down when you're upset. Last night I forgot to be that person. I want to be him again, for you, every single time.</p>
+    <p>So take the space you asked for. Take the whole weekend. I'm not going anywhere. Not on Monday, and not ever. That's 312 days of you, and I'd choose every one of them again. Even the hard one. <em>Especially</em> the hard one, because I learned from it.</p>
+    <p>I love you, Tasneem. More than I said last night, and more than I'll ever manage to type.</p>
+    <div class="sign">— Muffi 💛</div>
+  </article>
+  <button class="cta" id="toFinale">One last star</button>
+</section>
+
+<!-- 5. Finale -->
+<section id="finale" class="scene">
+  <h2 class="f-item">Take your time.</h2>
+  <p class="f-item">I'll be right here, under the same sky, Nagpur to Mumbai.</p>
+  <p class="f-item">See you Monday, Inshallah. 💛</p>
+  <div class="tiny f-item">You've sent me <span class="nw">👉🏻👈🏻</span> 671 times.<br>This one's mine: <span class="nw">👉🏻👈🏻</span></div>
+  <button class="replay f-item" id="replay">Walk the stars again</button>
+</section>
+
+<button id="music" aria-label="Pause or play music"><span class="disc"></span></button>
+
+<script>
+/* ============ DATA (all from our chat) ============ */
+const MEMORIES = [
+  { date:"30 Dec 2025", label:"Dec", title:"The first yes",
+    quote:"Haa, meko milgya go ahead, Aajao Nagpur 🤗", who:"me",
+    note:"You asked if you could come, and your parents wanted to make sure it was okay on my side. It was the easiest yes of my life, and I've been saying it ever since." },
+  { date:"30 Dec 2025", label:"Dec", title:"The first scolding",
+    quote:"Comfy hoke dekhna hota hai. Aadhi raat ko kon calories burn krta hai 😂", who:"you",
+    note:"Day one, and you were already telling me how to watch Stranger Things properly. That's when I knew I was in trouble. The good kind." },
+  { date:"24 Jan 2026", label:"Jan", title:"The ring",
+    quote:"Abhi toh ye promise ring jaisa hai. Itna mat kharcha kar 🥺", who:"you",
+    note:"I showed you gold, and you chose silver because you were worried about my wallet before your own finger. Who does that? You do." },
+  { date:"9 Feb 2026", label:"Feb", title:"Our families, one room",
+    quote:"Muffi, I felt soo lucky today, to have you by my side 👉🏻👈🏻", who:"you",
+    note:"Mumma hugged you, and there were tears in her eyes. I've never been prouder. That evening I said I love you, and you shouted back that you loved me MORE. Still unfair." },
+  { date:"9 Feb 2026", label:"Feb", title:"The leftover tea",
+    quote:"Aapka jhoota pada hai, woii piyenge hum garam krke. Pyaar badhta hai naa", who:"you",
+    note:"Out of everything that day, this is the line I keep coming back to. My half-finished cup, warmed up again, because it was mine. That's love in its smallest, truest form." },
+  { date:"22 Feb 2026", label:"Feb", title:"Proud se zyada",
+    quote:"I am soo sooo proud of you muffiii. Actually proud se zyada. I have soo much respect for you right now", who:"you",
+    note:"I read this at 1 AM and just sat there smiling. You see me bigger than I see myself. I'm still trying to grow into the man you described that night." },
+  { date:"5 May 2026", label:"May", title:"What you love about me",
+    quote:"Especially times when I get pissed at you, how easily you cool it down", who:"you",
+    note:"Last night I didn't. I'm sorry, Bachuu. You fell for the guy who calms the storm, not the one who adds to it. I'm going to keep being him for you." },
+  { date:"16 Jun 2026", label:"Jun", title:"Till we are alive",
+    quote:"I love you and I hope you love me like this till we are alive 👄💗", who:"you",
+    note:"You hoped. So here's my answer, in writing, so you can come back to it anytime: yes. Like this, and more. Till we are alive." },
+  { date:"14 Nov 2026", label:"Today", title:"The one that's still on",
+    quote:"Babyyy. I love youuu 💕", who:"me, 5:17 AM",
+    note:"I sent this before the sun was up, because I couldn't sleep without you knowing it. You don't have to answer it. I just wanted you to know this star stays lit, whatever happens." }
+];
+
+const STATS = [
+  { n:312,   t:"days of talking to you, and not one of them felt long enough" },
+  { n:34074, t:"messages. That's a small novel, written two thumbs at a time" },
+  { n:209,   t:"times one of us typed “I love you”" },
+  { n:47,    t:"times you said “I love you more”. You're winning, and I'm okay with that" },
+  { n:671,   t:"👉🏻👈🏻. The most dangerous emoji on earth" },
+  { n:725,   t:"“okie”s. Each one is cuter than a normal okay" },
+  { n:719,   t:"times I called you some version of Bachuu. I'm still finding new ways to spell you" },
+  { n:1,     t:"bad night. It doesn't get to outweigh the other 311.", wide:true }
+];
+
+/* ============ helpers ============ */
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function show(id){ document.querySelectorAll('.scene').forEach(s => s.classList.toggle('on', s.id === id)); }
+
+/* ============ starfield canvas ============ */
+const cv = $('#sky'), ctx = cv.getContext('2d');
+let W, H, DPR, stars = [], shooters = [], burst = false;
+function resize(){
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = cv.width = innerWidth * DPR; H = cv.height = innerHeight * DPR;
+  cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px';
+  const count = Math.round((innerWidth * innerHeight) / 2600);
+  stars = Array.from({length: count}, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    r: (Math.random() ** 3 * 1.6 + .25) * DPR,
+    a: Math.random() * Math.PI * 2, s: .004 + Math.random() * .018,
+    warm: Math.random() < .18
+  }));
+}
+function spawnShooter(){
+  const fromLeft = Math.random() < .5;
+  shooters.push({ x: (fromLeft ? Math.random()*.5 : .5 + Math.random()*.5) * W, y: Math.random() * H * .45,
+    vx: (fromLeft ? 1 : -1) * (7 + Math.random()*6) * DPR, vy: (3 + Math.random()*3) * DPR, life: 1 });
+}
+function frame(){
+  ctx.clearRect(0, 0, W, H);
+  for (const s of stars){
+    s.a += s.s;
+    const o = .35 + Math.sin(s.a) * .35 + .3;
+    ctx.globalAlpha = o;
+    ctx.fillStyle = s.warm ? '#ffe2a8' : '#dfe6ff';
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill();
+  }
+  if (!reduce && Math.random() < (burst ? .12 : .004)) spawnShooter();
+  for (const m of shooters){
+    m.x += m.vx; m.y += m.vy; m.life -= .012;
+    const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx*12, m.y - m.vy*12);
+    g.addColorStop(0, `rgba(255,236,190,${m.life})`); g.addColorStop(1, 'rgba(255,236,190,0)');
+    ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = 1.6 * DPR;
+    ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - m.vx*12, m.y - m.vy*12); ctx.stroke();
+  }
+  shooters = shooters.filter(m => m.life > 0);
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(frame);
+}
+addEventListener('resize', resize); resize(); frame();
+
+/* ============ music (YouTube) ============ */
+const VIDEO_ID = 'FeKRtRvo7Qc';
+let player, ready = false, wantPlay = false;
+const tag = document.createElement('script'); tag.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(tag);
+window.onYouTubeIframeAPIReady = () => {
+  player = new YT.Player('yt', {
+    videoId: VIDEO_ID,
+    playerVars: { autoplay: 0, controls: 0, loop: 1, playlist: VIDEO_ID, playsinline: 1, rel: 0 },
+    events: {
+      onReady: () => { ready = true; if (wantPlay) startMusic(); },
+      onStateChange: e => $('#music').classList.toggle('playing', e.data === YT.PlayerState.PLAYING)
+    }
+  });
+};
+function startMusic(){
+  wantPlay = true;
+  if (!ready) return;
+  player.unMute(); player.setVolume(0); player.playVideo();
+  let v = 0; const fade = setInterval(() => { v += 4; player.setVolume(Math.min(v, 80)); if (v >= 80) clearInterval(fade); }, 150);
+}
+$('#music').addEventListener('click', () => {
+  if (!ready) return;
+  player.getPlayerState() === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo();
+});
+
+/* ============ intro ============ */
+(async () => {
+  const lines = document.querySelectorAll('.intro-line');
+  for (const l of lines){ await sleep(reduce ? 100 : 1500); l.classList.add('show'); }
+  await sleep(900); $('#begin').classList.add('show');
+})();
+$('#begin').addEventListener('click', () => {
+  startMusic(); $('#music').classList.add('show');
+  show('constellation'); setTimeout(buildConstellation, 900);
+});
+
+/* ============ constellation ============ */
+const N = MEMORIES.length;
+function heartPt(t){
+  const X = 16 * Math.sin(t) ** 3;
+  const Y = 13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t);
+  return [500 + X * 23, 380 - Y * 23];
+}
+// place stars evenly along the heart's outline (by arc length), starting at the top dip
+const PTS = (() => {
+  const S = 720, pts = [], acc = [0];
+  for (let i = 0; i <= S; i++) pts.push(heartPt(i / S * Math.PI * 2));
+  for (let i = 1; i <= S; i++) acc.push(acc[i-1] + Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]));
+  const total = acc[S];
+  return MEMORIES.map((_, k) => { const target = total * k / N; let j = acc.findIndex(a => a >= target); return pts[Math.max(j, 0)]; });
+})();
+let litCount = 0;
+
+function buildConstellation(){
+  const g = $('#stars');
+  g.innerHTML = '';
+  // heart outline fill (revealed at the end)
+  let d = ''; for (let i = 0; i <= 120; i++){ const [x,y] = heartPt(i/120*Math.PI*2); d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); }
+  $('#heartFill').setAttribute('d', d + 'Z');
+
+  PTS.forEach(([x, y], i) => {
+    const s = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    s.setAttribute('class', 'star-g locked'); s.dataset.i = i;
+    s.setAttribute('role', 'button'); s.setAttribute('tabindex', '0');
+    s.setAttribute('aria-label', `Memory ${i+1}: ${MEMORIES[i].title}`);
+    const lblY = y + (y > 560 ? 50 : -32);
+    s.innerHTML = `<circle class="halo" cx="${x}" cy="${y}" r="34"/>
+      <circle class="core" cx="${x}" cy="${y}" r="5.5"/>
+      <circle class="hit" cx="${x}" cy="${y}" r="62"/>
+      <text class="lbl" x="${x}" y="${lblY}" text-anchor="middle">${MEMORIES[i].label}</text>`;
+    s.addEventListener('click', () => tapStar(i));
+    s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tapStar(i); } });
+    g.appendChild(s);
+  });
+  setNext();
+}
+function setNext(){
+  document.querySelectorAll('.star-g').forEach((s, i) => {
+    s.classList.toggle('next', i === litCount);
+    s.classList.toggle('locked', i > litCount);
+  });
+}
+function drawEdge(a, b){
+  const [x1,y1] = PTS[a], [x2,y2] = PTS[b];
+  const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  ln.setAttribute('class', 'edge');
+  Object.entries({x1, y1, x2, y2}).forEach(([k, v]) => ln.setAttribute(k, v));
+  const len = Math.hypot(x2-x1, y2-y1);
+  ln.style.strokeDasharray = len; ln.style.strokeDashoffset = len;
+  ln.style.transition = 'stroke-dashoffset 1.4s ease';
+  $('#edges').appendChild(ln);
+  requestAnimationFrame(() => requestAnimationFrame(() => ln.style.strokeDashoffset = 0));
+}
+const hints = [
+  "Tap the star that's glowing.",
+  "Next one's waiting…", "Keep going, Madam.", "You're doing great 👉🏻👈🏻",
+  "Halfway to something.", "Almost a shape now…", "Can you see it yet?", "Two more.", "Last one. The newest."
+];
+function tapStar(i){
+  if (i > litCount) return;
+  openCard(i);
+  if (i === litCount){
+    const el = document.querySelectorAll('.star-g')[i];
+    el.classList.add('lit');
+    if (i > 0) drawEdge(i - 1, i);
+    litCount++;
+    setNext();
+    $('#cHint').textContent = hints[Math.min(litCount, hints.length - 1)];
+  }
+}
+
+/* memory card */
+let pendingFinish = false;
+function openCard(i){
+  const m = MEMORIES[i];
+  $('#cardNum').textContent = `Star ${i+1} of ${N}`;
+  $('#cardDate').textContent = m.date;
+  $('#cardTitle').textContent = m.title;
+  $('#cardQuote').innerHTML = `“${m.quote}”<small>— ${m.who}</small>`;
+  $('#cardNote').textContent = m.note;
+  $('#cardClose').textContent = i === N - 1 ? 'Close the heart ✦' : 'Keep it lit ✦';
+  $('#card').classList.add('on');
+  pendingFinish = (litCount === N - 1 && i === N - 1) || pendingFinish;
+  setTimeout(() => $('#cardClose').focus(), 300);
+}
+$('#cardClose').addEventListener('click', closeCard);
+$('#card').addEventListener('click', e => { if (e.target.id === 'card') closeCard(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && $('#card').classList.contains('on')) closeCard(); });
+function closeCard(){
+  $('#card').classList.remove('on');
+  if (litCount === N && pendingFinish){ pendingFinish = false; finishHeart(); }
+}
+async function finishHeart(){
+  await sleep(500);
+  drawEdge(N - 1, 0);
+  $('#cHint').textContent = "It was always this shape.";
+  await sleep(1500);
+  $('#heartFill').style.opacity = 1;
+  burst = true; setTimeout(() => burst = false, 2600);
+  await sleep(800);
+  $('#nameText').classList.add('write');
+  await sleep(reduce ? 400 : 5200);
+  $('#toNumbers').classList.add('show');
+  $('#toNumbers').style.transform = 'translate(-50%,0)';
+}
+
+/* ============ numbers ============ */
+$('#toNumbers').addEventListener('click', async () => {
+  show('numbers');
+  const grid = $('#grid');
+  grid.innerHTML = STATS.map(s => `<div class="stat${s.wide ? ' wide' : ''}"><b data-n="${s.n}">0</b><span>${s.t}</span></div>`).join('');
+  $('#toLetter').classList.remove('show');
+  await sleep(900);
+  for (const el of grid.children){
+    el.classList.add('show'); countUp(el.querySelector('b'));
+    await sleep(reduce ? 50 : 420);
+  }
+  await sleep(1200); $('#toLetter').classList.add('show');
+});
+function countUp(b){
+  const target = +b.dataset.n, dur = reduce ? 1 : 1600, t0 = performance.now();
+  (function tick(t){
+    const p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+    b.textContent = Math.round(target * e).toLocaleString('en-IN');
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+/* ============ letter ============ */
+$('#toLetter').addEventListener('click', async () => {
+  show('letter'); $('#letter').scrollTop = 0;
+  $('#toFinale').classList.remove('show');
+  const ps = document.querySelectorAll('.paper p');
+  ps.forEach(p => p.classList.remove('show'));
+  await sleep(1000);
+  for (const p of ps){ p.classList.add('show'); await sleep(reduce ? 50 : 1100); }
+  await sleep(600); $('#toFinale').classList.add('show');
+});
+
+/* ============ finale ============ */
+$('#toFinale').addEventListener('click', async () => {
+  show('finale'); burst = true;
+  const items = document.querySelectorAll('.f-item');
+  items.forEach(i => i.classList.remove('show'));
+  await sleep(1000);
+  for (const it of items){ it.classList.add('show'); await sleep(reduce ? 50 : 1500); }
+  setTimeout(() => burst = false, 1500);
+});
+$('#replay').addEventListener('click', () => {
+  litCount = 0; $('#edges').innerHTML = ''; $('#heartFill').style.opacity = 0;
+  $('#nameText').classList.remove('write'); $('#toNumbers').classList.remove('show');
+  $('#toNumbers').style.transform = ''; $('#cHint').textContent = hints[0];
+  show('constellation'); setTimeout(buildConstellation, 900);
+});
+</script>
+</body>
+</html>
